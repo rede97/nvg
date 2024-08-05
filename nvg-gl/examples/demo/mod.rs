@@ -9,28 +9,21 @@ pub trait Demo<R: Renderer> {
         Ok(())
     }
 
-    fn update(
-        &mut self,
-        _width: f32,
-        _height: f32,
-        _ctx: &mut Context<R>
-    ) -> anyhow::Result<()> {
+    fn update(&mut self, _width: f32, _height: f32, _ctx: &mut Context<R>) -> anyhow::Result<()> {
         Ok(())
     }
 
     fn cursor_moved(&mut self, _x: f32, _y: f32) {}
 }
 
-pub fn run<D: Demo<nvg_gl::Renderer> + 'static>(
-    mut demo: D,
-    title: &str
-) {
+pub fn run<D: Demo<nvg_gl::Renderer> + 'static>(mut demo: D, title: &str) {
     let el = EventLoop::new();
     let wb = glutin::window::WindowBuilder::new()
         .with_title(format!("nvg - {}", title))
         .with_inner_size(glutin::dpi::LogicalSize::new(1024.0, 768.0));
     let windowed_context = glutin::ContextBuilder::new()
-        .build_windowed(wb, &el).unwrap();
+        .build_windowed(wb, &el)
+        .unwrap();
     let windowed_context = unsafe { windowed_context.make_current().unwrap() };
     gl::load_with(|p| windowed_context.get_proc_address(p) as *const _);
 
@@ -43,51 +36,47 @@ pub fn run<D: Demo<nvg_gl::Renderer> + 'static>(
     demo.init(&mut context).unwrap();
 
     let mut total_frames = 0;
-    let start_time = Instant::now();
+    let mut start_time = Instant::now();
 
     el.run(move |evt, _, ctrl_flow| {
         windowed_context.window().request_redraw();
         match evt {
             Event::LoopDestroyed => return,
-            Event::WindowEvent {event, ..} => match event {
+            Event::WindowEvent { event, .. } => match event {
                 WindowEvent::CloseRequested => *ctrl_flow = ControlFlow::Exit,
                 WindowEvent::Resized(psize) => window_size = psize,
-                WindowEvent::CursorMoved {position, ..} =>
-                    demo.cursor_moved(position.x as f32, position.y as f32),
-                _ => ()
-            }
+                WindowEvent::CursorMoved { position, .. } => {
+                    demo.cursor_moved(position.x as f32, position.y as f32)
+                }
+                _ => (),
+            },
             Event::RedrawRequested(_) => {
                 unsafe {
-                    gl::Viewport(
-                        0,
-                        0,
-                        window_size.width as i32,
-                        window_size.height as i32
-                    );
+                    gl::Viewport(0, 0, window_size.width as i32, window_size.height as i32);
                     gl::ClearColor(0.0, 0.0, 0.0, 1.0);
-                    gl::Clear(
-                        gl::COLOR_BUFFER_BIT |
-                        gl::DEPTH_BUFFER_BIT |
-                        gl::STENCIL_BUFFER_BIT
-                    );
+                    gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT | gl::STENCIL_BUFFER_BIT);
                 }
-                context.begin_frame(
-                    nvg::Extent {
-                        width: window_size.width as f32,
-                        height: window_size.height as f32
-                    },
-                    scale_factor as f32
-                ).unwrap();
+                context
+                    .begin_frame(
+                        nvg::Extent {
+                            width: window_size.width as f32,
+                            height: window_size.height as f32,
+                        },
+                        scale_factor as f32,
+                    )
+                    .unwrap();
 
                 context.save();
                 demo.update(
                     window_size.width as f32,
                     window_size.height as f32,
-                    &mut context
-                ).unwrap();
+                    &mut context,
+                )
+                .unwrap();
                 context.restore();
 
                 context.save();
+                context.begin_path();
                 total_frames += 1;
                 let fps =
                     (total_frames as f32) /
@@ -103,7 +92,7 @@ pub fn run<D: Demo<nvg_gl::Renderer> + 'static>(
                 context.end_frame().unwrap();
                 windowed_context.swap_buffers().unwrap();
             }
-            _ => ()
+            _ => (),
         }
     });
 }
