@@ -255,7 +255,7 @@ impl Renderer {
 
     unsafe fn do_fill(&self, call: &Call) {
         let paths = &self.paths[call.path_offset..call.path_offset + call.path_count];
-
+        gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
         gl::Enable(gl::STENCIL_TEST);
         gl::StencilMask(0xff);
         gl::StencilFunc(gl::ALWAYS, 0, 0xff);
