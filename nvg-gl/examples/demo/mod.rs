@@ -35,7 +35,6 @@ pub fn run<D: Demo<nvg_gl::Renderer> + 'static>(mut demo: D, title: &str) {
 
     demo.init(&mut context).unwrap();
 
-    let mut total_frames = 0;
     let mut start_time = Instant::now();
 
     el.run(move |evt, _, ctrl_flow| {
@@ -77,11 +76,8 @@ pub fn run<D: Demo<nvg_gl::Renderer> + 'static>(mut demo: D, title: &str) {
 
                 context.save();
                 context.begin_path();
-                total_frames += 1;
-                let fps =
-                    (total_frames as f32) /
-                    (Instant::now() -
-                     start_time).as_secs_f32();
+                let fps = 1.0 / start_time.elapsed().as_secs_f32();
+                start_time = Instant::now();
                 context.fill_paint(Color::rgb(1.0, 0.0, 0.0));
                 context.font("roboto");
                 context.font_size(20.0);
