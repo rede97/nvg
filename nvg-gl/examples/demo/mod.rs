@@ -1,7 +1,6 @@
 use glutin::event::{Event, WindowEvent};
 use glutin::event_loop::{ControlFlow, EventLoop};
-use nvg::{Align, Color, Context, Renderer};
-use std::time::Instant;
+use nvg::{Context, Renderer};
 
 pub trait Demo<R: Renderer> {
     fn init(&mut self, ctx: &mut Context<R>) -> anyhow::Result<()> {
@@ -22,10 +21,16 @@ pub fn run<D: Demo<nvg_gl::Renderer> + 'static>(mut demo: D, title: &str) {
         .with_title(format!("nvg - {}", title))
         .with_inner_size(glutin::dpi::LogicalSize::new(1024.0, 768.0));
     let windowed_context = glutin::ContextBuilder::new()
+        .with_vsync(true)
+        .with_multisampling(4)
         .build_windowed(wb, &el)
         .unwrap();
     let windowed_context = unsafe { windowed_context.make_current().unwrap() };
     gl::load_with(|p| windowed_context.get_proc_address(p) as *const _);
+
+    // unsafe {
+    // gl::Enable(gl::MULTISAMPLE);
+    // }
 
     let mut window_size = windowed_context.window().inner_size();
     let scale_factor = windowed_context.window().scale_factor();
@@ -35,7 +40,7 @@ pub fn run<D: Demo<nvg_gl::Renderer> + 'static>(mut demo: D, title: &str) {
 
     demo.init(&mut context).unwrap();
 
-    let mut start_time = Instant::now();
+    // let mut start_time = Instant::now();
 
     el.run(move |evt, _, ctrl_flow| {
         windowed_context.window().request_redraw();
@@ -74,19 +79,20 @@ pub fn run<D: Demo<nvg_gl::Renderer> + 'static>(mut demo: D, title: &str) {
                 .unwrap();
                 context.restore();
 
-                context.save();
-                context.begin_path();
-                let fps = 1.0 / start_time.elapsed().as_secs_f32();
-                start_time = Instant::now();
-                context.fill_paint(Color::rgb(1.0, 0.0, 0.0));
-                context.font("roboto");
-                context.font_size(20.0);
-                context.text_align(Align::TOP | Align::LEFT);
-                context.text((10, 10), format!("FPS: {:.2}", fps)).unwrap();
-                context.fill().unwrap();
-                context.restore();
+                // context.save();
+                // context.begin_path();
+                // let fps = 1.0 / start_time.elapsed().as_secs_f32();
+                // start_time = Instant::now();
+                // context.fill_paint(Color::rgb(1.0, 0.0, 0.0));
+                // context.font("roboto");
+                // context.font_size(20.0);
+                // context.text_align(Align::TOP | Align::LEFT);
+                // context.text((10, 10), format!("FPS: {:.2}", fps)).unwrap();
+                // context.fill().unwrap();
+                // context.restore();
                 context.end_frame().unwrap();
                 windowed_context.swap_buffers().unwrap();
+                // std::thread::sleep(time::Duration::from_millis(10));
             }
             _ => (),
         }
