@@ -256,7 +256,7 @@ impl Renderer {
     unsafe fn do_fill(&self, call: &Call) {
         let paths = &self.paths[call.path_offset..call.path_offset + call.path_count];
         gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
-        gl::Enable(gl::STENCIL_TEST);
+        // gl::Enable(gl::STENCIL_TEST);
         gl::StencilMask(0xff);
         gl::StencilFunc(gl::ALWAYS, 0, 0xff);
         gl::ColorMask(gl::FALSE, gl::FALSE, gl::FALSE, gl::FALSE);
@@ -279,15 +279,15 @@ impl Renderer {
 
         self.set_uniforms(call.uniform_offset + 1, call.image);
 
-        gl::StencilFunc(gl::EQUAL, 0x00, 0xff);
-        gl::StencilOp(gl::KEEP, gl::KEEP, gl::KEEP);
-        for path in paths {
-            gl::DrawArrays(
-                gl::TRIANGLE_STRIP,
-                path.stroke_offset as i32,
-                path.stroke_count as i32,
-            );
-        }
+        // gl::StencilFunc(gl::EQUAL, 0x00, 0xff);
+        // gl::StencilOp(gl::KEEP, gl::KEEP, gl::KEEP);
+        // for path in paths {
+        //     gl::DrawArrays(
+        //         gl::TRIANGLE_STRIP,
+        //         path.stroke_offset as i32,
+        //         path.stroke_count as i32,
+        //     );
+        // }
 
         gl::StencilFunc(gl::NOTEQUAL, 0x00, 0xff);
         gl::StencilOp(gl::ZERO, gl::ZERO, gl::ZERO);

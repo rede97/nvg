@@ -22,15 +22,14 @@ pub fn run<D: Demo<nvg_gl::Renderer> + 'static>(mut demo: D, title: &str) {
         .with_inner_size(glutin::dpi::LogicalSize::new(1024.0, 768.0));
     let windowed_context = glutin::ContextBuilder::new()
         .with_vsync(true)
-        .with_multisampling(4)
+        // .with_multisampling(4)
         .build_windowed(wb, &el)
         .unwrap();
     let windowed_context = unsafe { windowed_context.make_current().unwrap() };
     gl::load_with(|p| windowed_context.get_proc_address(p) as *const _);
-
-    // unsafe {
-    // gl::Enable(gl::MULTISAMPLE);
-    // }
+    unsafe {
+        gl::Disable(gl::MULTISAMPLE);
+    }
 
     let mut window_size = windowed_context.window().inner_size();
     let scale_factor = windowed_context.window().scale_factor();
@@ -57,7 +56,7 @@ pub fn run<D: Demo<nvg_gl::Renderer> + 'static>(mut demo: D, title: &str) {
             Event::RedrawRequested(_) => {
                 unsafe {
                     gl::Viewport(0, 0, window_size.width as i32, window_size.height as i32);
-                    gl::ClearColor(0.0, 0.0, 0.0, 1.0);
+                    gl::ClearColor(0.4, 0.3, 0.3, 1.0);
                     gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT | gl::STENCIL_BUFFER_BIT);
                 }
                 context
