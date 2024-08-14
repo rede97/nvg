@@ -255,14 +255,14 @@ impl Renderer {
 
     unsafe fn do_fill(&self, call: &Call) {
         let paths = &self.paths[call.path_offset..call.path_offset + call.path_count];
-        gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
-        // gl::Enable(gl::STENCIL_TEST);
+        // gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
+        gl::Enable(gl::STENCIL_TEST);
         gl::StencilMask(0xff);
         gl::StencilFunc(gl::ALWAYS, 0, 0xff);
         gl::ColorMask(gl::FALSE, gl::FALSE, gl::FALSE, gl::FALSE);
 
         self.set_uniforms(call.uniform_offset, call.image);
-
+        // gl::StencilOp(gl::KEEP, gl::KEEP, gl::INVERT);
         gl::StencilOpSeparate(gl::FRONT, gl::KEEP, gl::KEEP, gl::INCR_WRAP);
         gl::StencilOpSeparate(gl::BACK, gl::KEEP, gl::KEEP, gl::DECR_WRAP);
         gl::Disable(gl::CULL_FACE);

@@ -1,7 +1,6 @@
 use anyhow::Error;
 use nvg::*;
 use core::f32;
-use std::f32::consts::PI;
 use std::time::Instant;
 
 mod demo;
@@ -18,6 +17,12 @@ impl<R: Renderer> demo::Demo<R> for DemoDraw {
             ImageFlags::REPEATX | ImageFlags::REPEATY,
             "nvg-gl/examples/lenna.png",
         )?);
+        // unsafe  {
+        //     gl::Enable(gl::BLEND);
+        //     gl::Enable(gl::POLYGON_SMOOTH);
+        //     gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
+        //     gl::Hint(gl::POLYGON_SMOOTH_HINT, gl::FASTEST);
+        // }
         Ok(())
     }
 
@@ -50,14 +55,27 @@ impl<R: Renderer> demo::Demo<R> for DemoDraw {
         ctx.line_to((600.0, 200.0));
         ctx.line_to((400.0, 100.0));
         ctx.line_to((400.0, 600.0));
-        ctx.close_path();
-        // let color = Color::lerp(
-        //     Color::rgb_i(0x2e, 0x50, 0x77),
-        //     Color::rgb_i(0xff, 0xca, 0x77),
-        //     elapsed.sin() * 0.5 + 0.5,
-        // );
-        ctx.fill_paint(Color::rgba(0.2, 0.6, 0.2, 1.0));
+        ctx.path_solidity(Solidity::Hole);
+        ctx.fill_paint(Color::rgba(0.6, 0.4, 0.2, 1.0));
+        // ctx.fill()?;
+
+        
+
+
+        ctx.circle((300.0, 300.0), 30.0);
+        ctx.fill_paint(Color::rgba(0.2, 0.2, 0.6, 1.0));
         ctx.fill()?;
+
+        ctx.circle((350.0, 300.0), 40.0);
+        ctx.path_solidity(Solidity::Hole);
+        // // let color = Color::lerp(
+        // //     Color::rgb_i(0x2e, 0x50, 0x77),
+        // //     Color::rgb_i(0xff, 0xca, 0x77),
+        // //     elapsed.sin() * 0.5 + 0.5,
+        // // );
+        ctx.fill_paint(Color::rgba(0.6, 0.2, 0.2, 1.0));
+        ctx.fill()?;
+        // ctx.close_path();
         // ctx.stroke_paint(Color::rgba(0.2, 0.6, 0.2, 1.0));
         // ctx.stroke_width(2.0); 
         // ctx.stroke()?;
