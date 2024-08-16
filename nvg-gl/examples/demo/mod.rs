@@ -32,7 +32,7 @@ pub fn run<D: Demo<nvg_gl::Renderer> + 'static>(mut demo: D, title: &str) {
     }
 
     let mut window_size = windowed_context.window().inner_size();
-    let scale_factor = windowed_context.window().scale_factor();
+    let scale_factor = 1.0; //windowed_context.window().scale_factor();
 
     let renderer = nvg_gl::Renderer::create().unwrap();
     let mut context = nvg::Context::create(renderer).unwrap();
@@ -56,7 +56,7 @@ pub fn run<D: Demo<nvg_gl::Renderer> + 'static>(mut demo: D, title: &str) {
             Event::RedrawRequested(_) => {
                 unsafe {
                     gl::Viewport(0, 0, window_size.width as i32, window_size.height as i32);
-                    gl::ClearColor(0.3, 0.3, 0.3, 1.0);
+                    gl::ClearColor(0.2, 0.2, 0.2, 1.0);
                     gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT | gl::STENCIL_BUFFER_BIT);
                 }
                 context
